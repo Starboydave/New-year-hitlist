@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hit List</title>
+  <meta name="description" content="A cyberpunk New Year's resolution tracker that nags you when you slack off.">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><line x1='22' y1='12' x2='18' y2='12'/><line x1='6' y1='12' x2='2' y2='12'/><line x1='12' y1='6' x2='12' y2='2'/><line x1='12' y1='22' x2='12' y2='18'/></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="scanline" aria-hidden="true"></div>
+
+  <main id="app" class="container">
+    <header class="header">
+      <div class="header-row">
+        <div>
+          <h1 class="title">
+            <svg class="icon icon-title" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+            Hit List <span id="year"></span>
+          </h1>
+          <p class="status">// SYSTEM_STATUS: <span id="status" class="status-online">ONLINE</span></p>
+        </div>
+        <div class="completion">
+          <div class="completion-label">MISSION COMPLETION</div>
+          <div id="rate" class="completion-rate">0%</div>
+        </div>
+      </div>
+
+      <div class="progress" role="progressbar" aria-label="Mission completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="progress-fill" class="progress-fill"></div>
+        <div class="progress-grid" aria-hidden="true"></div>
+      </div>
+    </header>
+
+    <form id="add-form" class="add-form" autocomplete="off">
+      <svg class="icon add-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      <label for="target-input" class="sr-only">New target</label>
+      <input id="target-input" type="text" maxlength="120" placeholder="ENTER NEW TARGET PARAMETERS...">
+      <button type="submit">Authorize</button>
+    </form>
+
+    <div class="stats" aria-live="polite">
+      <span>ACTIVE: <strong id="count-active">0</strong></span>
+      <span>TERMINATED: <strong id="count-done">0</strong></span>
+    </div>
+
+    <ul id="targets" class="targets"></ul>
+    <div id="empty" class="empty" hidden>NO ACTIVE CONTRACTS DETECTED</div>
+  </main>
+
+  <div id="nag" class="nag" role="alertdialog" aria-modal="true" aria-labelledby="nag-title" hidden>
+    <div class="nag-box">
+      <svg class="icon nag-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <h2 id="nag-title">WARNING: STAGNATION DETECTED</h2>
+      <p>TARGETS ARE ACTIVE. INACTION IS NOT AN OPTION.<br>INITIATE PROTOCOLS IMMEDIATELY.</p>
+      <button id="nag-dismiss" type="button">I'm working on it</button>
+    </div>
+  </div>
+
+  <template id="target-template">
+    <li class="target">
+      <div class="target-row">
+        <div class="target-main">
+          <button class="toggle" type="button">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </button>
+          <div>
+            <h3 class="target-text"></h3>
+            <div class="target-meta">
+              <span class="badge"></span>
+              <span class="countdown">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span class="countdown-time">--:--:--</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <button class="delete" type="button">
+          <svg class="icon icon-md" viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+      <span class="corner corner-top" aria-hidden="true"></span>
+      <span class="corner corner-bottom" aria-hidden="true"></span>
+    </li>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
