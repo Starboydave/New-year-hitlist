@@ -44,6 +44,8 @@ ngrok http 3000             # copy the https://….ngrok-free.app URL
    The `transferCall` tool has **empty destinations** on purpose: the server supplies the number dynamically.
 3. Call the assistant's number (or use "Talk to assistant").
 
+**Browser test console:** with the server running, open http://localhost:3000/console to fire sample Vapi events (complaint caller, book a tour, forced error, etc.) and see the reply and response time. It is disabled when `NODE_ENV=production`.
+
 Test the 6 PM briefing without waiting: `curl -X POST -H "x-admin-token: $ADMIN_TOKEN" localhost:3000/api/admin/run-briefing`
 
 ## Behaviour worth knowing

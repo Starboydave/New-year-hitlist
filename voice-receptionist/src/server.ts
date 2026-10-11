@@ -1,5 +1,6 @@
 import express from 'express';
 import crypto from 'crypto';
+import path from 'path';
 import { config, missingConfig } from './config';
 import { log } from './utils/logger';
 import { vapiRouter } from './routes/vapiWebhook';
@@ -9,6 +10,11 @@ import { prewarmGoogleAuth } from './services/googleAuth';
 const app = express();
 app.disable('x-powered-by');
 app.use(express.json({ limit: '1mb' }));
+
+// Browser test console (local use). Disabled in production.
+if (!config.isProd) {
+  app.use('/console', express.static(path.resolve(process.cwd(), 'public'), { index: 'console.html' }));
+}
 
 app.get('/health', (_req, res) => res.json({ ok: true, uptime: process.uptime() }));
 app.use('/api', vapiRouter);

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Webhook Test Console</title>
+<style>
+:root{--bg:#f6f8f9;--panel:#fff;--fg:#17232b;--muted:#5d6f7a;--line:#d6dfe5;--accent:#0b7a75;--ok:#1a7f45;--warn:#a15c00;--bad:#b3261e;--code:#fbfcfd}
+@media (prefers-color-scheme:dark){:root{--bg:#0f171c;--panel:#162229;--fg:#e4edf1;--muted:#8fa3ae;--line:#26363f;--accent:#4fc3bb;--ok:#5fd08a;--warn:#f0b35a;--bad:#ff8a80;--code:#121d23;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;padding:20px 16px}
+.wrap{max-width:1100px;margin:0 auto;display:grid;gap:16px}
+h1{font-size:1.35rem;margin:0}
+p{margin:4px 0 0;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}
+.row{display:flex;flex-wrap:wrap;gap:12px}
+label{display:grid;gap:4px;font-size:.8rem;color:var(--muted);flex:1 1 220px;min-width:0}
+input,textarea{font:inherit;background:var(--code);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:7px 9px;width:100%}
+textarea{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;min-height:260px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;cursor:pointer;border-radius:4px;padding:6px 12px;border:1px solid var(--accent);background:none;color:var(--accent)}
+button[aria-pressed=true],button.primary{background:var(--accent);color:var(--panel)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media(max-width:800px){.cols{grid-template-columns:minmax(0,1fr)}}
+.meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;min-height:28px}
+.pill{font-size:.78rem;padding:2px 9px;border-radius:99px;border:1px solid currentColor;font-variant-numeric:tabular-nums}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+pre{margin:0;background:var(--code);border:1px solid var(--line);border-radius:4px;padding:10px;overflow:auto;max-height:420px;font:.8rem/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.hint{font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Webhook Test Console</h1>
+    <p>Sends sample Vapi events to this server's <code>/api/vapi-webhook</code> and shows the reply and response time. Responses slower than the budget should become a Ghost Transfer.</p>
+  </header>
+
+  <section class="card">
+    <div class="row">
+      <label for="secret">Webhook secret (VAPI_WEBHOOK_SECRET)<input id="secret" type="password" autocomplete="off"></label>
+      <label for="phone">Caller number<input id="phone" value="08012345678"></label>
+      <label for="admin">Admin token (for briefing)<input id="admin" type="password" autocomplete="off"></label>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="chips" id="chips" role="group" aria-label="Scenarios"></div>
+    <p class="hint" id="desc"></p>
+  </section>
+
+  <div class="cols">
+    <section class="card">
+      <label for="body">Request body (editable)<textarea id="body" spellcheck="false"></textarea></label>
+      <div class="chips" style="margin-top:10px">
+        <button class="primary" id="send" type="button">Send to webhook</button>
+        <button id="brief" type="button">Run 6 PM briefing now</button>
+      </div>
+    </section>
+    <section class="card">
+      <div class="meta" id="meta"><span class="hint">No request sent yet.</span></div>
+      <pre id="out">Pick a scenario and press Send.</pre>
+    </section>
+  </div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const store = { get(k){ try{return sessionStorage.getItem(k)||''}catch(e){return ''} }, set(k,v){ try{sessionStorage.setItem(k,v)}catch(e){} } };
+$('secret').value = store.get('secret'); $('admin').value = store.get('admin');
+$('secret').oninput = (e) => store.set('secret', e.target.value);
+$('admin').oninput = (e) => store.set('admin', e.target.value);
+
+// Tomorrow 11:00 Lagos time (UTC+1), as ISO with offset.
+function tourTime() {
+  const d = new Date(Date.now() + 25 * 3600e3 + 3600e3);
+  const p = (n) => String(n).padStart(2, '0');
+  return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())}T11:00:00+01:00`;
+}
+const call = () => ({ id: 'test-call-' + Date.now(), customer: { number: $('phone').value } });
+const tool = (name, parameters) => ({ message: { type: 'tool-calls', call: call(), toolCallList: [{ id: 'tc-' + Math.random().toString(36).slice(2, 8), name, parameters }] } });
+
+const SCENARIOS = [
+  { name: 'Complaint caller', desc: 'Expect a transfer to the Property Manager (no Google needed).', make: () => tool('route_department', { intent: 'complaint' }) },
+  { name: 'New enquiry', desc: 'Expect route "sales". If the Clients sheet lookup is not configured this may Ghost Transfer instead.', make: () => tool('route_department', { intent: 'new_booking' }) },
+  { name: 'Book a tour', desc: 'Needs Google Calendar and Sheets configured. Without them you should see a Ghost Transfer.', make: () => tool('book_and_log', { name: 'Adaeze Okafor', budget: '120 million naira', preference: '4-bed terrace, Ikoyi', start_time: tourTime(), email: '' }) },
+  { name: 'Low budget', desc: 'Budget below MIN_BUDGET_NGN: politely declined, not booked, no Google call before the decision.', make: () => tool('book_and_log', { name: 'Bola Test', budget: '1 million', preference: 'Lekki apartment', start_time: tourTime() }) },
+  { name: 'Queue WhatsApps', desc: 'Queues the 3 WhatsApps for a tour. Needs Green API keys to actually send.', make: () => tool('trigger_nurture', { name: 'Chidi Test', preference: 'Grand Hall', start_time: tourTime() }) },
+  { name: 'Unknown tool', desc: 'Forces an error. Expect a Ghost Transfer to the backup ring group.', make: () => tool('does_not_exist', {}) },
+  { name: 'Transfer request', desc: 'What Vapi sends when the assistant calls transferCall. Expect the backup number.', make: () => ({ message: { type: 'transfer-destination-request', call: call() } }) },
+  { name: 'End of call', desc: 'Counts one call for the daily briefing.', make: () => ({ message: { type: 'end-of-call-report', call: call() } }) },
+];
+
+let active = 0;
+function pick(i) {
+  active = i;
+  [...$('chips').children].forEach((b, j) => b.setAttribute('aria-pressed', j === i));
+  $('desc').textContent = SCENARIOS[i].desc;
+  $('body').value = JSON.stringify(SCENARIOS[i].make(), null, 2);
+}
+SCENARIOS.forEach((s, i) => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = s.name; b.onclick = () => pick(i); $('chips').append(b);
+});
+pick(0);
+
+function show(status, ms, data, note) {
+  const meta = $('meta'); meta.replaceChildren();
+  const pill = (t, c) => { const s = document.createElement('span'); s.className = 'pill ' + c; s.textContent = t; meta.append(s); };
+  pill('HTTP ' + status, status === 200 ? 'ok' : 'bad');
+  pill(ms + ' ms', ms <= 800 ? 'ok' : 'warn');
+  if (note) pill(note.text, note.cls);
+  $('out').textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+}
+
+function classify(d) {
+  const s = JSON.stringify(d || {});
+  if (!s.includes('destination')) return null;
+  const num = (d.destination && d.destination.number) || '';
+  return /transferCall|destination/.test(s) ? { text: 'Transfer to ' + num, cls: 'warn' } : null;
+}
+
+async function run(url, opts) {
+  const t0 = performance.now();
+  try {
+    const r = await fetch(url, opts);
+    const ms = Math.round(performance.now() - t0);
+    const text = await r.text();
+    let data = text; try { data = JSON.parse(text); } catch (e) {}
+    show(r.status, ms, data, typeof data === 'object' ? classify(data) : null);
+  } catch (e) {
+    show(0, Math.round(performance.now() - t0), 'Could not reach the server: ' + e.message);
+  }
+}
+
+$('send').onclick = () => {
+  let body; try { body = JSON.parse($('body').value); } catch (e) { return show(0, 0, 'The request body is not valid JSON: ' + e.message); }
+  run('/api/vapi-webhook', { method: 'POST', headers: { 'content-type': 'application/json', 'x-vapi-secret': $('secret').value }, body: JSON.stringify(body) });
+};
+$('brief').onclick = () => run('/api/admin/run-briefing', { method: 'POST', headers: { 'x-admin-token': $('admin').value } });
+</script>
+</body>
+</html>
