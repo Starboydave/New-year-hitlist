@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-sage-50 text-slate-800 antialiased; }
+  :focus-visible { @apply outline-none ring-2 ring-sage-600 ring-offset-2 ring-offset-white; }
+}
+
+/* 4-7-8 breathing: inhale 4s (0–21.05%), hold 7s (–58.95%), exhale 8s (–100%) of a 19s cycle. */
+@keyframes breathe-478 {
+  0%      { transform: scale(0.55); animation-timing-function: ease-in-out; }
+  21.05%  { transform: scale(1);    animation-timing-function: linear; }
+  58.95%  { transform: scale(1);    animation-timing-function: ease-in-out; }
+  100%    { transform: scale(0.55); }
+}
+
+.breath-orb {
+  transform: scale(0.55);
+  animation: breathe-478 19s both;
+}
+
+/* Respect reduced-motion: swap the continuous scaling for a stepped size change tied to the phase label. */
+@media (prefers-reduced-motion: reduce) {
+  .breath-orb { animation: none !important; transition: none; }
+  .breath-orb[data-phase="inhale"],
+  .breath-orb[data-phase="hold"] { transform: scale(1); }
+  .breath-orb[data-phase="exhale"],
+  .breath-orb[data-phase="idle"]  { transform: scale(0.55); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeUp { animation: none !important; }
+}
