@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Name — Portfolio</title>
+<meta name="description" content="Portfolio of Your Name: selected work, about, and contact.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #18181B;
+    --on-primary: #FFFFFF;
+    --secondary: #3F3F46;
+    --accent: #2563EB;
+    --on-accent: #FFFFFF;
+    --background: #FAFAFA;
+    --foreground: #09090B;
+    --card: #FFFFFF;
+    --muted: #E8ECF0;
+    --muted-foreground: #475569;
+    --border: #18181B;
+    --ring: #2563EB;
+    --space-1: 4px; --space-2: 8px; --space-3: 16px; --space-4: 24px;
+    --space-5: 32px; --space-6: 48px; --space-7: 64px; --space-8: 96px;
+    --font-body: "Archivo", system-ui, sans-serif;
+    --font-display: "Space Grotesk", "Archivo", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --primary: #FAFAFA; --on-primary: #09090B;
+      --secondary: #D4D4D8;
+      --accent: #60A5FA; --on-accent: #09090B;
+      --background: #09090B; --foreground: #FAFAFA;
+      --card: #18181B; --muted: #27272A; --muted-foreground: #A1A1AA;
+      --border: #FAFAFA; --ring: #60A5FA;
+    }
+  }
+  :root[data-theme="dark"] {
+    --primary: #FAFAFA; --on-primary: #09090B;
+    --secondary: #D4D4D8;
+    --accent: #60A5FA; --on-accent: #09090B;
+    --background: #09090B; --foreground: #FAFAFA;
+    --card: #18181B; --muted: #27272A; --muted-foreground: #A1A1AA;
+    --border: #FAFAFA; --ring: #60A5FA;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--background); color: var(--foreground);
+    font: 400 1rem/1.6 var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+  .skip {
+    position: absolute; left: var(--space-3); top: -100px; z-index: 100;
+    background: var(--accent); color: var(--on-accent); padding: var(--space-2) var(--space-3);
+    font-weight: 700;
+  }
+  .skip:focus { top: var(--space-3); }
+
+  .wrap { width: min(1200px, 100% - 2 * var(--space-4)); margin-inline: auto; }
+  h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; margin: 0; letter-spacing: -0.02em; }
+
+  /* Header */
+  header.site {
+    position: sticky; top: 0; z-index: 10; background: var(--background);
+    border-bottom: 3px solid var(--border);
+  }
+  header.site .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 64px; gap: var(--space-3); }
+  .logo { font: 800 1.25rem var(--font-display); text-decoration: none; }
+  nav ul { display: flex; gap: var(--space-2); list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+  nav a, .theme-toggle {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--space-3);
+    font-weight: 700; text-decoration: none; border: 2px solid transparent; cursor: pointer;
+    background: none; color: inherit; font-family: inherit; font-size: 1rem;
+  }
+  nav a:hover, .theme-toggle:hover { border-color: var(--border); }
+  .theme-toggle { border-color: var(--border); }
+
+  /* Hero */
+  .hero { padding: var(--space-8) 0 var(--space-7); border-bottom: 3px solid var(--border); }
+  .eyebrow {
+    display: inline-block; background: var(--accent); color: var(--on-accent);
+    padding: var(--space-1) var(--space-3); font: 700 0.875rem var(--font-display);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--space-4);
+  }
+  .hero h1 { font-size: clamp(2.75rem, 9vw, 7.5rem); font-weight: 700; max-width: 14ch; }
+  .hero p { font-size: clamp(1.125rem, 2vw, 1.5rem); max-width: 52ch; color: var(--muted-foreground); margin: var(--space-4) 0 var(--space-5); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 48px;
+    padding: 0 var(--space-5); font: 700 1rem var(--font-display); text-decoration: none;
+    border: 3px solid var(--border); cursor: pointer;
+    background: var(--primary); color: var(--on-primary);
+    box-shadow: 6px 6px 0 var(--accent);
+  }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--accent); }
+  .btn:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--accent); }
+  .btn.alt { background: var(--card); color: var(--foreground); margin-left: var(--space-3); }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+  .actions .btn.alt { margin-left: 0; }
+
+  /* Sections */
+  section { padding: var(--space-8) 0; border-bottom: 3px solid var(--border); }
+  .section-head { display: flex; align-items: baseline; gap: var(--space-4); margin-bottom: var(--space-6); flex-wrap: wrap; }
+  .section-head .num { font: 700 1rem var(--font-display); color: var(--accent); }
+  .section-head h2 { font-size: clamp(2rem, 5vw, 3.5rem); }
+
+  /* Work grid */
+  .grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(12, 1fr); }
+  .card {
+    grid-column: span 6; background: var(--card); border: 3px solid var(--border);
+    display: flex; flex-direction: column; text-decoration: none;
+  }
+  .card:nth-child(1) { grid-column: span 7; }
+  .card:nth-child(2) { grid-column: span 5; }
+  .card:nth-child(3) { grid-column: span 5; }
+  .card:nth-child(4) { grid-column: span 7; }
+  .card .thumb {
+    aspect-ratio: 16 / 10; background: var(--muted); border-bottom: 3px solid var(--border);
+    display: grid; place-items: center; font: 800 4rem var(--font-display); color: var(--secondary);
+  }
+  .card .body { padding: var(--space-4); display: grid; gap: var(--space-2); flex: 1; align-content: start; }
+  .card h3 { font-size: 1.5rem; }
+  .card p { margin: 0; color: var(--muted-foreground); }
+  .tags { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-2); list-style: none; padding: 0; margin: var(--space-2) 0 0; }
+  .tags li { border: 2px solid var(--border); padding: 2px var(--space-2); font-size: 0.875rem; font-weight: 700; }
+  .card:hover { background: var(--accent); color: var(--on-accent); }
+  .card:hover p { color: inherit; }
+  .card:hover .tags li { border-color: currentColor; }
+
+  /* About */
+  .about { display: grid; gap: var(--space-6); grid-template-columns: 1fr 1fr; }
+  .about p { font-size: 1.125rem; max-width: 60ch; margin: 0 0 var(--space-3); }
+  .skills { list-style: none; margin: 0; padding: 0; border: 3px solid var(--border); background: var(--card); }
+  .skills li { padding: var(--space-3) var(--space-4); border-bottom: 3px solid var(--border); font: 700 1.125rem var(--font-display); display: flex; justify-content: space-between; gap: var(--space-3); }
+  .skills li:last-child { border-bottom: 0; }
+  .skills span { color: var(--muted-foreground); font-weight: 500; font-family: var(--font-body); }
+
+  /* Contact */
+  .contact { background: var(--primary); color: var(--on-primary); border-bottom: 0; }
+  .contact h2 { font-size: clamp(2.5rem, 8vw, 6rem); max-width: 16ch; }
+  .contact a.mail {
+    display: inline-block; margin-top: var(--space-5); font: 700 clamp(1.25rem, 3vw, 2rem) var(--font-display);
+    color: var(--on-primary); text-decoration-thickness: 4px; text-underline-offset: 6px;
+  }
+  .contact a.mail:hover { color: var(--accent); }
+  .contact .links { display: flex; gap: var(--space-3); flex-wrap: wrap; list-style: none; padding: 0; margin: var(--space-5) 0 0; }
+  .contact .links a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--space-4);
+    border: 2px solid var(--on-primary); font-weight: 700; text-decoration: none; color: var(--on-primary);
+  }
+  .contact .links a:hover { background: var(--on-primary); color: var(--primary); }
+  .contact :focus-visible { outline-color: var(--accent); }
+  footer { padding: var(--space-4) 0; font-size: 0.875rem; color: var(--muted-foreground); }
+
+  /* Scroll reveal (progressive enhancement) */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .25s ease, transform .25s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 800px) {
+    .card, .card:nth-child(n) { grid-column: 1 / -1; }
+    .about { grid-template-columns: 1fr; }
+    .hero, section { padding: var(--space-7) 0; }
+    header.site .wrap { padding-block: var(--space-2); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .btn:hover, .btn:active { transform: none; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#work">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="logo" href="#top">YN.</a>
+    <nav aria-label="Primary">
+      <ul>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><button class="theme-toggle" type="button" aria-pressed="false" id="theme">Dark</button></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Available for new projects</span>
+      <h1>I design and build things for the web.</h1>
+      <p>Hi, I'm Your Name — a designer and developer focused on clear interfaces, fast sites, and products people actually enjoy using.</p>
+      <div class="actions">
+        <a class="btn" href="#work">See my work</a>
+        <a class="btn alt" href="#contact">Get in touch</a>
+      </div>
+    </div>
+  </div>
+
+  <section id="work" aria-labelledby="work-h">
+    <div class="wrap">
+      <div class="section-head"><span class="num">01</span><h2 id="work-h">Selected work</h2></div>
+      <div class="grid">
+        <a class="card reveal" href="#">
+          <div class="thumb" aria-hidden="true">A</div>
+          <div class="body"><h3>Project One</h3><p>One-line outcome: what you built and the result it delivered.</p>
+            <ul class="tags"><li>Product design</li><li>Web app</li></ul></div>
+        </a>
+        <a class="card reveal" href="#">
+          <div class="thumb" aria-hidden="true">B</div>
+          <div class="body"><h3>Project Two</h3><p>One-line outcome: what you built and the result it delivered.</p>
+            <ul class="tags"><li>Branding</li><li>Website</li></ul></div>
+        </a>
+        <a class="card reveal" href="#">
+          <div class="thumb" aria-hidden="true">C</div>
+          <div class="body"><h3>Project Three</h3><p>One-line outcome: what you built and the result it delivered.</p>
+            <ul class="tags"><li>Mobile</li><li>UX research</li></ul></div>
+        </a>
+        <a class="card reveal" href="#">
+          <div class="thumb" aria-hidden="true">D</div>
+          <div class="body"><h3>Project Four</h3><p>One-line outcome: what you built and the result it delivered.</p>
+            <ul class="tags"><li>Design system</li><li>Frontend</li></ul></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" aria-labelledby="about-h">
+    <div class="wrap">
+      <div class="section-head"><span class="num">02</span><h2 id="about-h">About</h2></div>
+      <div class="about">
+        <div class="reveal">
+          <p>Write two or three short sentences about who you are, what you care about, and how you work with clients or teams.</p>
+          <p>Mention where you're based and what kind of projects you're looking for next.</p>
+        </div>
+        <ul class="skills reveal" aria-label="Skills">
+          <li>Interface design <span>Figma</span></li>
+          <li>Frontend <span>HTML, CSS, JS</span></li>
+          <li>Accessibility <span>WCAG 2.2 AA</span></li>
+          <li>Motion <span>Purposeful, subtle</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact" aria-labelledby="contact-h">
+    <div class="wrap">
+      <div class="section-head"><span class="num" style="color:var(--accent)">03</span></div>
+      <h2 id="contact-h">Let's make something good.</h2>
+      <a class="mail" href="mailto:you@example.com">you@example.com</a>
+      <ul class="links">
+        <li><a href="#" rel="noopener">GitHub</a></li>
+        <li><a href="#" rel="noopener">LinkedIn</a></li>
+        <li><a href="#" rel="noopener">Dribbble</a></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">© <span id="year">2026</span> Your Name. All rights reserved.</div></footer>
+
+<script>
+  (function () {
+    var root = document.documentElement, btn = document.getElementById('theme');
+    var saved = null;
+    try { saved = localStorage.getItem('theme'); } catch (e) {}
+    function isDark() {
+      return root.dataset.theme ? root.dataset.theme === 'dark'
+        : matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    function sync() { var d = isDark(); btn.textContent = d ? 'Light' : 'Dark'; btn.setAttribute('aria-pressed', d); }
+    if (saved) root.dataset.theme = saved;
+    sync();
+    btn.addEventListener('click', function () {
+      var next = isDark() ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      sync();
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    var items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      items.forEach(function (el) { el.classList.add('in'); }); return;
+    }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>
